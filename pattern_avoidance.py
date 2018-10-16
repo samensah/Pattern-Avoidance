@@ -13,12 +13,7 @@ def word(n):
     >>> word(2)
     ... (('1','2'),('2','1'))
     """
-    perm_list = []
-    for i in range(1, n+1):
-        perm_list.append(i)
-    perms = (p for p in permutations(perm_list))
-    return perms
-
+    return (p for p in permutations([i for i in range(1, n+1)]))
 
 def alternate(perms_n):
     """
