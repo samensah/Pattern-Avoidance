@@ -1,0 +1,374 @@
+% This must be in the first 5 lines to tell arXiv to use pdfLaTeX, which is strongly recommended.
+\pdfoutput=1
+% In particular, the hyperref package requires pdfLaTeX in order to break URLs across lines.
+
+\documentclass[11pt]{article}
+
+% Change "review" to "final" to generate the final (sometimes called camera-ready) version.
+% Change to "preprint" to generate a non-anonymous version with page numbers.
+\usepackage[review]{acl}
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amssymb, amsfonts}
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+% For Vietnamese characters
+% \usepackage[T5]{fontenc}
+% See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+
+% This is also not strictly necessary, and may be commented out.
+% However, it will improve the aesthetics of text in
+% the typewriter font.
+\usepackage{inconsolata}
+
+%Including images in your LaTeX document requires adding
+%additional package(s)
+\usepackage{graphicx}
+
+% If the title and author information does not fit in the area allocated, uncomment the following
+%
+%\setlength\titlebox{<dim>}
+%
+% and set <dim> to something 5cm or larger.
+
+\title{Instructions for *ACL Proceedings}
+
+% Author information can be set in various styles:
+% For several authors from the same institution:
+% \author{Author 1 \and ... \and Author n \\
+%         Address line \\ ... \\ Address line}
+% if the names do not fit well on one line use
+%         Author 1 \\ {\bf Author 2} \\ ... \\ {\bf Author n} \\
+% For authors from different institutions:
+% \author{Author 1 \\ Address line \\  ... \\ Address line
+%         \And  ... \And
+%         Author n \\ Address line \\ ... \\ Address line}
+% To start a separate ``row'' of authors use \AND, as in
+% \author{Author 1 \\ Address line \\  ... \\ Address line
+%         \AND
+%         Author 2 \\ Address line \\ ... \\ Address line \And
+%         Author 3 \\ Address line \\ ... \\ Address line}
+
+\author{First Author \\
+  Affiliation / Address line 1 \\
+  Affiliation / Address line 2 \\
+  Affiliation / Address line 3 \\
+  \texttt{email@domain} \\\And
+  Second Author \\
+  Affiliation / Address line 1 \\
+  Affiliation / Address line 2 \\
+  Affiliation / Address line 3 \\
+  \texttt{email@domain} \\}
+
+%\author{
+%  \textbf{First Author\textsuperscript{1}},
+%  \textbf{Second Author\textsuperscript{1,2}},
+%  \textbf{Third T. Author\textsuperscript{1}},
+%  \textbf{Fourth Author\textsuperscript{1}},
+%\\
+%  \textbf{Fifth Author\textsuperscript{1,2}},
+%  \textbf{Sixth Author\textsuperscript{1}},
+%  \textbf{Seventh Author\textsuperscript{1}},
+%  \textbf{Eighth Author \textsuperscript{1,2,3,4}},
+%\\
+%  \textbf{Ninth Author\textsuperscript{1}},
+%  \textbf{Tenth Author\textsuperscript{1}},
+%  \textbf{Eleventh E. Author\textsuperscript{1,2,3,4,5}},
+%  \textbf{Twelfth Author\textsuperscript{1}},
+%\\
+%  \textbf{Thirteenth Author\textsuperscript{3}},
+%  \textbf{Fourteenth F. Author\textsuperscript{2,4}},
+%  \textbf{Fifteenth Author\textsuperscript{1}},
+%  \textbf{Sixteenth Author\textsuperscript{1}},
+%\\
+%  \textbf{Seventeenth S. Author\textsuperscript{4,5}},
+%  \textbf{Eighteenth Author\textsuperscript{3,4}},
+%  \textbf{Nineteenth N. Author\textsuperscript{2,5}},
+%  \textbf{Twentieth Author\textsuperscript{1}}
+%\\
+%\\
+%  \textsuperscript{1}Affiliation 1,
+%  \textsuperscript{2}Affiliation 2,
+%  \textsuperscript{3}Affiliation 3,
+%  \textsuperscript{4}Affiliation 4,
+%  \textsuperscript{5}Affiliation 5
+%\\
+%  \small{
+%    \textbf{Correspondence:} \href{mailto:email@domain}{email@domain}
+%  }
+%}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Relation extraction (RE) models often suffer from entity bias, where the model relies too heavily on entity-specific information instead of contextual cues. The Variational Information Bottleneck has been proposed to address this by encouraging the model to discard irrelevant entity information. While it is intuitive to apply VIB after contextual encoding, when entity representations include interactions with context, the current state-of-the-art applies it before encoding, directly on raw entity embeddings. We investigate this design choice across pretrained encoders with different levels of entity awareness. Our results show that post-encoding VIB is more effective for standard models such as RoBERTa, whereas entity-aware models like LUKE benefit more from applying VIB before encoding. These findings suggest that the placement of the bottleneck should align with the pretraining strategy of the encoder.
+\end{abstract}
+
+\section{Introduction}
+
+Relation extraction (RE) is a fundamental natural language processing (NLP) task that aims to identify the semantic relationships between entities in text. This area has found strong applications, as the extraction results is beneficial for for numerous downstream applications, including knowledge graph construction \cite{}, question answering \cite{}, and information retrieval \cite{}. 
+
+Despite significant advances with language models, including pretrained-language models (PLMs) \cite{} and large language models (LLMs) \cite{}, these models often suffer from entity bias - a phenomenon where models overly rely on entity-specific information rather than contextual relation cues \cite{}. This bias leads to poor generalization when entity distributions shift between training and testing.
+
+Previous entity bias mitigation approaches utilizing PLMs like RoBERTa-Large \cite{} and LUKE-Large \cite{} have explored entity masking \cite{}, entity substitution \cite{}, contrastive pre-training \cite{}, counterfactual analysis and generation \cite{}, and structural causal models \cite{}. Other works based on LLMs have devised prompt techniques \cite{} and context-aware decoding approaches \cite{}. While LLMs like LLaMA \cite{} and Mistral \cite{} are becoming mainstream in several NLP tasks, they still significantly underperform PLMs in relation extraction \cite{} due to entity bias \cite{}, preference optimization \cite{}, hallucination, to name a few. As such, there has been a continued effort on developing solutions using PLMs, with the recent state-of-the-art method \cite{} adapting the variational information bottleneck approach \cite{}.
+
+\cite{} models the problem as minimizing the conditional mutual information $I(X;Z|E)$, indicating how much information the input $X$ and $Z$ share when conditioned on entity information $E$. A crucial design question concerns when to apply the information bottleneck: on original embeddings before encoding as done in \cite{}, or on contextualized representations after encoding which is more intuitive, as $E$ is known by $X$ after encoding. This choice fundamentally affects what information is compressed and how the mutual information terms are interpreted. In this work, we compare these design choices to validate the modeling assumptions and understand how the timing of information bottleneck application affects both bias mitigation and task performance. While applying the information bottleneck to raw entity embeddings has proven effective in \cite{}, we hypothesize that it depends on the pretrained entity-knowledge of the encoder.
+
+Our contributions are as follows:
+
+
+\section{The Variation Approach}
+\cite{} formulate the problem of entity bias mitigation using the variational information bottleneck (VIB) \cite{}. This is achieved by minimizing the conditional mutual information $I(X;Z|E)$ defined as: 
+
+\begin{align*}
+    I(X;Z|E) &= \int dx\,dz\, de p(x,z,e)\,\log \frac{p(z|x,e)}{p(z|e)} \\
+    &\leq \int dx\,dz\, de p(x,z,e)\,\log \frac{p(z|x,e)}{r(z|e)} 
+\end{align*}
+
+\noindent
+with the VIB loss defined as: 
+\begin{align}
+    L_{VIB} = \mathbb{E}_{p(x,z,e)}[\text{KL}(p(z|x,e) || r(z|e) )]
+\end{align}
+
+where $p(z|x,e)$ is modeled as a Gaussian distribution $\mathcal{N}(\mu(x), \sigma(x))$, with $\mu$ and $\sigma$ modeled as neural networks. $r(z|e)$ is a variational approximation, typically chosen as a standard normal distribution $N(0, I)$ to act as a regularizer. This KL term serves as a tractable upper bound on the mutual information $I(X;Z|E)$.\footnote{X, H, Z, E are random variables;
+x, h, z, e are their respective instances.} Although the model learns a token-level latent representation $Z$ for the entire input 
+$Z$, a binary mask $M(X)$ is used to apply VIB regularization only to the entity token positions. This ensures that compression is applied specifically on entity embeddings.
+
+\section{Related Work}
+
+
+\section{Pre- vrs Post-PLM Application}
+
+\subsection*{Pre-PLM Application}
+{\it When VIB is applied { before} PLM application}.
+
+\noindent
+The conditional mutual information $I(X;Z|E)$ quantifies how much information the latent representation $Z$ retains about input $X$ after conditioning on entity information $E$. Minimizing this encourages the model to compress biased information in $X$ that can be inferred from $E$, and instead focus on capturing task-relevant features that require contextual understanding.
+
+However, in \cite{}, the VIB is applied to the raw entity embeddings in $X$ prior to PLM encoding. This approximates minimizing the mutual information $I(X;Z)$, without explicitly conditioning on $E$. Thus, compression occurs early before contextual interactions and constrains how much information flows into the model. 
+
+\subsection*{Post-PLM Application}
+{\it When VIB is applied { after} PLM application}.
+\noindent
+In contrast, post-PLM application involves applying VIB to contextualized entity representations, i.e., after encoding the full input with a PLM. This allows the encoder to capture interactions between entities and their surrounding context before compression. The mutual information term in this case more closely reflects $I(H;Z|E)$, where $H$ denotes the contextualized representation of the input sentence $X$. 
+
+\paragraph{Intuitiveness} Applying VIB after the PLM encoder is more intuitive for mitigating entity bias, as such bias often arises during contextualization rather than the raw entity embeddings. For example, language models during finetuning frequently associate entities with dominant relation types due to skewed training distributions (e.g., ``Bill Gates'' and ``Microsoft'' frequently co-occur with the relation ``founder of''). 
+
+By applying VIB to the contextualized entity representations, the model is encouraged to discard entity-specific information that is not helpful for relation extraction. This includes spurious entity-relation patterns the model may have memorized during training. Since contextual encoding integrates both entity and contextual cues, the context helps determine which aspects of the entity are relevant and which can be discarded. This enables the bottleneck to filter information more effectively, based on how the entity functions in its specific context.
+
+
+\section{Pretrained Language Models}
+
+Pretrained language models such as BERT \cite{} and RoBERTa \cite{} have been trained on a large corpus using the masked language modeling objective. This training enables the model to acquire good contextual understanding of an entire sequence. As a result, they have proven to be effective across a range of downstream tasks and domains with minimal data.
+
+
+However, standard PLMs operate purely at the token level and treat all input text uniformly, without explicit knowledge of named entities or their real-world semantics. While this makes them broadly applicable, it also limits their ability to capture entity-specific information that may be crucial for tasks like relation extraction.
+
+\subsection{Further Pretraining}
+To address this, recent models have explored incorporating specialized knowledge by further pretraining these PLMs. Some of these models include, BioBERT \cite{}, SciBERT \cite{} and TweetBERT which are BERT-based models further pretrained on biomedical, scientific and Tweets corpora. Knowledge-enhanced models such as K-BERT \cite{} or ERNIE \cite{} inject external knowledge graphs into the input or training objective to guide representation learning.
+
+\paragraph{Entity-Aware Encoders} Another prominent model that directly ties to relation extraction is LUKE \cite{}, which extends and further pretrains the RoBERTa model with entity knowledge. Specifically, LUKE is trained to predict randomly masked word tokens and linked entity tokens in text, using a Wikipedia corpus. This allows LUKE to incorporate contextual features into entity embeddings by modeling interactions between entities and surrounding words. As such, LUKE has proven to achieve strong performance on different information extraction tasks, including relation extraction \cite{}. This finding motivates the following research question: do entity-aware encoders amplify entity bias by over-relying on learned entity-relation correlations? 
+
+In the next section, we explore how the placement of the information bottleneck interacts with the pretrained knowledge of the encoder.
+
+\section{Experiments}
+\subsection{Experimental Setup}
+We follow the same experimental setup as \cite{} and use the following publicly available datasets for evaluation: (1) REFinD \cite{} (financial domain); (2) TACRED \cite{} (general domain) and BioRED \cite{} (biomedicine domain). Each dataset is accompanied with the original test set (ID) and an out-of-domain (OOD) test set, to evaluate the model's performance in an entity distribution shift.\footnote{Preprocessed datasets obtained from \cite{} upon request.} To effectively compare pre- versus post-application of PLMs, we use the same hyperparameter $\beta=0.5$ as used in \cite{}. $\beta$ can be interpreted as a blending factor that mixes VIB-enhanced latent representation with the raw embeddings of the entities to ensure we preserve some information of entities. We follow the same evaluation protocol as previous work \cite{} and use the entity\_marker\_punctuation \cite{} to mark entities and the Micro-F1 as the evaluation metric. We refer readers to the work of \cite{} for any other modeling details. 
+
+\subsection{Comparison Pre- Vrs Post-PLM}
+
+\begin{table*}[t]
+\centering
+
+\begin{tabular}{lcccccc}
+\toprule
+&  \multicolumn{2}{c}{\textbf{TACRED}} & \multicolumn{2}{c}{\textbf{REFinD}} & \multicolumn{2}{c}{\textbf{BioRED}} \\
+\textbf{Method}  & \bf  ID &\bf OOD &\bf ID &\bf OOD &\bf ID &\bf OOD \\
+\midrule
+
+\textbf{LUKE-Large}  & 71.1{\tiny$\pm$0.3} & 63.8{\tiny$\pm$1.5} & 75.0{\tiny$\pm$0.2} & 73.4{\tiny$\pm$0.3} & 56.9{\tiny$\pm$0.7} & 51.8{\tiny$\pm$1.2} \\
+\quad w/ Ent. Mask  & 63.6{\tiny$\pm$0.1} & 61.7{\tiny$\pm$1.2} & 71.4{\tiny$\pm$0.4} & 71.4{\tiny$\pm$0.9} & 53.2{\tiny$\pm$0.6} & 40.2{\tiny$\pm$1.1} \\
+\quad w/ Ent. Substitution  & 66.6{\tiny$\pm$0.3} & 60.3{\tiny$\pm$0.6} & 74.3{\tiny$\pm$0.5} & 72.9{\tiny$\pm$1.2} & 56.2{\tiny$\pm$0.4} & 46.7{\tiny$\pm$1.0} \\
+\quad w/ SCM  & 68.6{\tiny$\pm$0.2} & 64.8{\tiny$\pm$0.4} & 74.5{\tiny$\pm$0.6} & 73.8{\tiny$\pm$0.6} & 58.3{\tiny$\pm$1.7} & 53.4{\tiny$\pm$1.7} \\ \midrule
+\quad w/ VIB (pre-PLM)   & \textbf{70.4}{\tiny$\pm$0.4} & \textbf{66.5}{\tiny$\pm$0.4} & \textbf{75.4}{\tiny$\pm$0.2} & \textbf{74.8}{\tiny$\pm$1.5} & {61.2}{\tiny$\pm$0.8} & \textbf{58.7}{\tiny$\pm$0.6} \\
+\quad w/ VIB (post-PLM) &55.6{\tiny$\pm$4.9}&46.2{\tiny$\pm$4.5}&75.0{\tiny $\pm$0.2}&72.6{\tiny $\pm$0.3}&\textbf{67.7}{\tiny $\pm$1.7}&50.9{\tiny $\pm$1.0} \\
+\midrule
+
+\textbf{RoBERTa-Large}  & 70.8{\tiny$\pm$0.1} & 61.5{\tiny$\pm$0.9} & 75.1{\tiny$\pm$0.2} & 72.7{\tiny$\pm$0.1} & 57.7{\tiny$\pm$1.9} & 47.9{\tiny$\pm$2.3} \\
+\quad w/ Entity Mask & 62.0{\tiny$\pm$0.7} & 60.6{\tiny$\pm$0.8} & 70.4{\tiny$\pm$1.5} & 71.2{\tiny$\pm$1.0} & 55.2{\tiny$\pm$1.9} & 45.7{\tiny$\pm$1.1} \\
+\quad w/ Entity Substitution  & 67.1{\tiny$\pm$0.3} & 61.2{\tiny$\pm$1.1} & 73.5{\tiny$\pm$0.9} & 71.9{\tiny$\pm$0.2} & 56.9{\tiny$\pm$1.1} & 46.8{\tiny$\pm$3.7} \\
+\quad w/ Structured Causal Model & 70.5{\tiny$\pm$0.6} & \textbf{67.5}{\tiny$\pm$0.3} & 74.9{\tiny$\pm$1.0} & 73.7{\tiny$\pm$1.1} & 57.3{\tiny$\pm$3.3} & \textbf{52.5}{\tiny$\pm$3.3} \\ \midrule
+\quad w/ VIB (pre-PLM)  & \textbf{70.7}{\tiny$\pm$0.3} & 67.2{\tiny$\pm$0.3} & \textbf{75.4}{\tiny$\pm$0.1} & \textbf{74.4}{\tiny$\pm$0.2} & \textbf{63.0}{\tiny$\pm$2.3} & 52.5{\tiny$\pm$3.6} \\
+\quad w/ VIB (post-PLM) &&&&&& \\
+
+\bottomrule
+\end{tabular}
+\caption{\textbf{Main Results:} Micro-F1 scores of compared methods with the RoBERTa-Large and LUKE-Large backbones on the TACRED, REFinD, and BioRED datasets, evaluated in both in-domain and out-of-domain settings. Results are averaged over 3 runs, with standard deviations reported.}
+\label{tab:main-results}
+\end{table*}
+
+
+
+
+
+
+
+
+% Traditional approaches \cite{} to relation extraction have primarily relied on encoder-based models such as BERT \cite{}, RoBERTa \cite{}, and LUKE \cite{}, which learn contextual representations of subject and object entities to classify their relationships. The conventional methodology assumes that entity representations capture not only entity-specific information but also the target relation expressed in the text \cite{}. While this approach has yielded impressive results, recent research has identified a critical limitation: models often develop an over-reliance on entity patterns rather than learning the semantic relationships between them \cite{}. This phenomenon, known as ``entity bias''\cite{}, occurs when models learn a direct mapping between frequently co-occurring entity pairs and relation labels, instead of understanding the underlying relational semantics expressed in the context.
+
+% Several solutions have been proposed to address entity bias in encoder-based models, including entity substitution, entity masking, Contrastive Relation Extraction (CoRE), structural causal modeling, and variational information bottleneck (VIB) approaches. However, as large language models (LLMs) have become mainstream in NLP research, the entity bias problem has persisted and even manifested in new ways. LLMs can leverage their extensive pre-trained knowledge about entities to infer relationships, sometimes disregarding the actual context presented in the input text.
+% The fundamental question becomes: how should we balance the model's reliance on pre-trained entity knowledge versus the contextual information when inferring relationships? With unknown or masked entities, LLMs tend to rely more heavily on context for relation inference. Yet, entity information remains crucial for accurate relation extraction in many cases \cite{}.
+
+% Recent approaches such as Context-Aware Decoding (CAD) and Adaptive Context-Aware Decoding (AdaCAD) have attempted to resolve similar conflicts between pre-trained knowledge and contextual information in question answering and summarization tasks. CAD introduces a contrastive output distribution that amplifies differences between output probabilities with and without context. However, CAD applies a fixed adjustment parameter across all instances, which can lead to overcorrection when knowledge conflict is minimal or absent.
+% AdaCAD addresses this limitation by dynamically inferring the weight of adjustment auto-regressively based on the degree of conflict between contextual and parametric knowledge. 
+
+
+% In this paper, we adapt the AdaCAD framework to address entity bias in relation extraction. Our approach dynamically adjusts the influence of entity knowledge versus contextual information during relation inference, providing a more nuanced solution to the entity bias problem for LLM-based relation extraction. Through comprehensive experiments on standard relation extraction benchmarks, we demonstrate that our adaptive decoding approach significantly reduces entity bias while maintaining or improving overall relation extraction performance.
+
+% \section{Related Work}
+
+% \subsection{Entity Bias in RE}
+
+% \subsection{Knowledge Conflict in LLMs}
+
+
+% \section{Methodology}
+
+% \subsection{Problem Statement}
+% Given a sentence $x$ with marked subject entity $e_s$ and object entity $e_o$, RE aims to determine the semantic relation $r \in \mathcal{R}$ between these entities, where $\mathcal{R}$ is a predefined set of relation types. An LLM parameterized by $\theta$ computes $p_\theta(r|x)$ to predict the most likely relation.
+
+% However, LLMs often rely on memorized knowledge about entity pairs rather than reasoning from the provided text. When presented with an instance where the contextual evidence suggests relation $r_c$ but the model's parametric knowledge associates entities $e_s$ and $e_o$ with relation $r_p$, the model risk defaulting to $r_p$, resulting in $p_\theta(r_p|x) > p_\theta(r_c|x)$ despite contradicting evidence in $x$. Our objective is to address this knowledge conflict by modifying the decoding process to appropriately balance contextual evidence and parametric knowledge.
+
+% \subsection{AdaCAD}
+% To address knowledge conflicts between contextual and parametric knowledge, \citet{} proposed Adaptive Context-Aware Decoding (AdaCAD) for summarization and question answering tasks. The key insight of AdaCAD is to dynamically adjust the degree to which a model attends to contextual information based on the measured conflict between contextual and parametric knowledge.
+
+% Given an input query $x$ with relevant context $c$, AdaCAD computes two probability distributions: one with only the query $p_\theta(y_t|x, y_{<t})$ and one with both query and context $p_\theta(y_t|c, x, y_{<t})$. AdaCAD then measures the Jensen-Shannon divergence (JSD) between these distributions:
+
+% $$\alpha^{\text{JSD}}_t = \text{JSD}(p_\theta(y_t|x, y_{<t}) \parallel p_\theta(y_t|c, x, y_{<t}))$$
+
+% $\alpha^{\text{JSD}}_t$ serves as a dynamic coefficient that adjusts the final probability distribution:
+
+% $$y_t \sim p_\theta(y_t|c, x, y_{<t})\left(\frac{p_\theta(y_t|c, x, y_{<t})}{p_\theta(y_t|x, y_{<t})}\right)^{\alpha^{\text{JSD}}_t}$$
+
+% This approach ensures that when there is high conflict (large $\alpha^{\text{JSD}}_t$), the model places more emphasis on contextual information, and when there is low conflict (small $\alpha^{\text{JSD}}_t$), the model relies more on its parametric knowledge.
+
+
+% \subsection{Adapting AdaCAD for RE}
+% We adapt AdaCAD to relation extraction by reframing the context and query structure. In our adaptation:
+
+% \begin{itemize}
+%     \item The \textbf{original instance} ($x$) is the complete sentence with marked subject and object entities.
+%     \item The \textbf{context} ($c$) is the same sentence with masked subject and object entities, preserving the relation context and only the entity type information.
+% \end{itemize}
+
+% We compute two distributions for an instance:
+
+% 1. $p_\theta(y_t|x, y_{<t})$: The distribution from the model seeing the full sentence with marked entities, potentially activating parametric knowledge about the entities.
+
+% 2. $p_\theta(y_t|c, x, y_{<t})$: The distribution from the model seeing both the masked version and the full sentence, forcing the model to consider contextual cues.
+
+% By measuring $\alpha^{\text{JSD}}_t$ between these distributions, we can adaptively determine the degree of conflict between the model's entity-based knowledge and the contextual relation cues. When a high divergence is detected, indicating stronger reliance on entity knowledge, AdaCAD increases the adjustment weight to prioritize contextual cues. Conversely, when divergence is low, suggesting alignment between parametric and contextual knowledge, the adjustment is minimal.
+
+% This approach effectively mitigates the model's tendency to extract relations based solely on memorized entity pairs, instead promoting extraction based on the actual textual evidence present in the instance.
+
+% \section{Experiments}
+
+% \subsection{Datasets}
+
+% We conduct experiments on two large-scale relation extraction datasets from different domains, including TACRED \cite{} (general domain) and REFinD \cite{} (financial domain). To evaluate our method's robustness to entity-knowledge conflicts, we also experiment on the out-of-domain TACRED dataset, Entity-replaced Dataset (ENTRED) \cite{} and also create an out-of-domain variant for REFIND, namely, Fin-REFIND, following the same methodology of \citet{}. These out-of-domain datasets are specifically designed to induce knowledge conflicts between the contextual information in the sentence and the model's parametric knowledge about the entities. A summary of the datasets is presented in Table~\ref{tab:dataset_statistics}, showing the number of relations (Rels), unique entities (Ents.) and instances in each dataset.
+
+% \begin{table}[t]
+% \centering
+% \small
+% \caption{Dataset Statistics }
+% \label{tab:dataset_statistics}
+% \begin{tabular}{lrrr}
+% \toprule
+% \textbf{Dataset} & \textbf{\# Rels} & \textbf{\# Ents.} & \textbf{\# Instances}  \\
+% \midrule
+% TACRED & 42 & 4,852 & 15,509  \\
+% ENTRED & 42 & 18,122 & 12,419  \\
+% \midrule
+% REFIND & 22 & 6,739 & 4,300 \\
+% Fin-ENTRED & 22 & 7,061 & 4,300  \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+
+% \subsection{Evaluation Protocols}
+% For evaluation, we test multiple open-source small LLMs (Qwen2.5-3B-Instruct \cite{}, Phi-4-mini-instruct \cite{}, Llama-3.2-3B-Instruct \cite{}) in a zero-shot setting. This ensures models rely solely on pre-existing knowledge and context without bias from hints from few-shot examples. We implement entity masking, replacing specific entities with generic [SUBJECT]-[ENT-TYPE] and [OBJECT]-[ENT-TYPE] tokens while preserving syntactic structure. This isolates contextual understanding from entity-specific information. Following standard relation extraction protocols, we report both micro-F1 scores and macro-F1 scores.
+
+% We follow standard evaluation practices for relation extraction tasks. For each dataset, we use the provided train/dev/test splits. In cases where official splits are not available (for our constructed OOD datasets), we maintain the same split structure as their original counterparts to ensure fair comparison. For preprocessing, we represent entities in the input by surrounding them with special markers indicating their position and type (e.g., "[SUBJ-PERSON]" and "[OBJ-ORGANIZATION]").
+
+% For entity masking in the context $c$, we replace the subject and object entities with special tokens [SUBJ] and [OBJ] respectively, preserving the syntactic structure while removing entity-specific information. This masking strategy allows us to isolate the influence of entity information from contextual cues. During evaluation, we employ the standard micro-averaged precision, recall, and F1 score metrics commonly used in relation extraction tasks. Additionally, we report macro-averaged F1 scores to provide insight into performance across all relation types, including less frequent ones.
+
+% Beyond standard metrics, we conduct a specialized analysis on examples with high Jensen-Shannon divergence values, which represent cases with significant conflict between entity-based and contextual predictions. We analyze the correlation between JSD values and prediction accuracy to verify the effectiveness of our adaptive approach in handling knowledge conflicts. We also examine performance on a subset of challenging examples where the baseline model confidently predicts incorrect relations due to entity bias.
+
+% \subsection{Models}
+% We implement our approach using several pretrained language models as backbone architectures to demonstrate generalizability. Our primary experiments use [MODEL NAME], a [SIZE]-parameter pretrained language model. We fine-tune this model on our training data using relation extraction as a classification task. For each instance, we provide the sentence with marked entities as input and ask the model to classify the relation between the subject and object entities.
+
+% For comparison, we implement three decoding strategies: (1) Standard decoding, which uses only the original input $x$ with marked entities; (2) Context-aware decoding (CAD) with a fixed $\alpha$ value of 1.0, following Shi et al. \cite{shi2024trusting}; and (3) our adapted AdaCAD approach with dynamic $\alpha$ based on JSD. For CAD and AdaCAD, we use the masked version of the input as context $c$ alongside the original input $x$.
+
+% For implementation details, we use [TRAINING DETAILS: learning rate, batch size, etc.]. We employ [OPTIMIZATION ALGORITHM] with [PARAMETERS] for optimization. All experiments are conducted on [HARDWARE DETAILS]. We run each experiment with [NUMBER] different random seeds and report the mean and standard deviation of the results.
+
+% \section{Results}
+% \begin{table}[htbp]
+% \centering
+% \small
+% \begin{tabular}{llcccc}
+% \toprule
+% \textbf{Model} & \textbf{Variant} 
+% & \multicolumn{2}{c}{\textbf{TACRED}} 
+% & \multicolumn{2}{c}{\textbf{REFinD}} \\
+% & & \textbf{ID} & \textbf{OOD}  & \textbf{ID} & \textbf{OOD} \\
+% \midrule
+% \multirow{2}{*}{Qwen2.5-3B} 
+% & original & & & &  \\
+% & masked   & & & &  \\
+% \midrule
+% \multirow{2}{*}{Phi-4-mini} 
+% & original & & & &  \\
+% & masked   & & & &  \\
+% \bottomrule
+% \end{tabular}
+% \caption{F1 Performance of Qwen2.5-3B and Phi-4-mini on TACRED and REFinD datasets.}
+% \label{tab:qwen_phi_extended}
+% \end{table}
+
+
+
+
+
+% \section*{Limitations}
+
+
+% \section*{Acknowledgments}
+% Bibliography entries for the entire Anthology, followed by custom entries
+%\bibliography{anthology,custom}
+% Custom bibliography entries only
+\bibliography{custom}
+
+\appendix
+
+\section{Example Appendix}
+\label{sec:appendix}
+
+This is an appendix.
+
+\end{document}
